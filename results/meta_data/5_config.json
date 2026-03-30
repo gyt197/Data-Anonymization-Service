@@ -1,0 +1,10 @@
+{
+    "exempt_columns": [
+        "dt",
+        "q"
+    ],
+    "force_pii_columns": [
+        "d",
+        "ts"
+    ]
+}

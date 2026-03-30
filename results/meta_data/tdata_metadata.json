@@ -1,0 +1,34 @@
+{
+    "tables": {
+        "tdata": {
+            "columns": {
+                "DATE": {
+                    "sdtype": "categorical"
+                },
+                "TIMESTAMP": {
+                    "sdtype": "categorical"
+                },
+                "LOCATION": {
+                    "sdtype": "categorical"
+                },
+                "ENERGY_SOURCE": {
+                    "sdtype": "categorical"
+                },
+                "MEASURE": {
+                    "sdtype": "categorical"
+                },
+                "UNIT_OF_MEASURE": {
+                    "sdtype": "categorical"
+                },
+                "INTERVAL": {
+                    "sdtype": "categorical"
+                },
+                "VALUE": {
+                    "sdtype": "numerical"
+                }
+            }
+        }
+    },
+    "relationships": [],
+    "METADATA_SPEC_VERSION": "V1"
+}

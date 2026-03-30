@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AnonymizationUI — Data Anonymization Workbench</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-hover: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #dbeafe;
+      --success: #059669;
+      --success-bg: #d1fae5;
+      --warning: #d97706;
+      --warning-bg: #fef3c7;
+      --error: #dc2626;
+      --error-bg: #fee2e2;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 1px 3px rgba(0,0,0,.06);
+      --shadow-lg: 0 10px 40px -10px rgba(0,0,0,.12);
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+    .logo-icon svg { width: 20px; height: 20px; }
+    .logo-text {
+      font-weight: 700;
+      font-size: 1.125rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+    .logo-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-left: 0.5rem;
+    }
+
+    .stepper {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .step:hover { background: var(--surface-hover); color: var(--text); }
+    .step.active {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+    .step.done { color: var(--success); }
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--border);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .step.active .step-num {
+      background: var(--primary);
+      color: white;
+    }
+    .step.done .step-num {
+      background: var(--success);
+      color: white;
+    }
+    .step-connector {
+      width: 24px;
+      height: 2px;
+      background: var(--border);
+    }
+    .step.done + .step-connector { background: var(--success); }
+
+    .main {
+      flex: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+    .panel {
+      display: none;
+      max-width: 900px;
+      margin: 0 auto;
+      animation: fadeIn .2s ease;
+    }
+    .panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .card-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text);
+    }
+    .card-header svg { width: 20px; height: 20px; color: var(--primary); flex-shrink: 0; }
+    .card-body { padding: 1.25rem; }
+
+    /* Step 1: Upload */
+    .dropzone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      text-align: center;
+      background: var(--surface-hover);
+      transition: border-color .2s, background .2s;
+      cursor: pointer;
+    }
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .dropzone-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 1rem;
+      color: var(--text-muted);
+    }
+    .dropzone:hover .dropzone-icon, .dropzone.dragover .dropzone-icon { color: var(--primary); }
+    .dropzone-title { font-weight: 600; margin-bottom: 0.25rem; }
+    .dropzone-hint { font-size: 0.9rem; color: var(--text-muted); }
+    .file-list {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0 0;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .file-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+    .file-list li:last-child { border-bottom: none; }
+    .file-list li:nth-child(even) { background: var(--surface-hover); }
+    .file-name { font-weight: 500; display: flex; align-items: center; gap: 0.5rem; }
+    .file-name svg { width: 18px; height: 18px; color: var(--primary); }
+    .file-meta { color: var(--text-muted); font-size: 0.85rem; }
+    .file-remove {
+      padding: 0.35rem 0.5rem;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: background .15s, color .15s;
+    }
+    .file-remove:hover { background: var(--error-bg); color: var(--error); }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.25rem;
+      font-family: var(--font);
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      transition: background .15s, color .15s, box-shadow .15s;
+    }
+    .btn svg { width: 18px; height: 18px; }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 4px 12px rgba(37,99,235,.3); }
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: var(--surface-hover); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #047857; }
+    .actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+
+    /* Step 2: PII Scan */
+    .table-select {
+      width: 100%;
+      max-width: 320px;
+      padding: 0.6rem 1rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      font-family: var(--font);
+      font-size: 0.95rem;
+      background: var(--surface);
+      color: var(--text);
+    }
+    .scan-summary {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .scan-stat {
+      flex: 1;
+      min-width: 140px;
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+    }
+    .scan-stat-label { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+    .scan-stat-value { font-size: 1.5rem; font-weight: 700; color: var(--text); }
+    .scan-stat.value .scan-stat-value { color: var(--primary); }
+    .scan-stat.warning .scan-stat-value { color: var(--warning); }
+    .data-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .data-table {
+      width: 100%;
+      min-width: 560px;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .data-table th, .data-table td {
+      padding: 0.65rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table th {
+      background: var(--surface-hover);
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .data-table tr:hover td { background: var(--surface-hover); }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-pii { background: var(--error-bg); color: var(--error); }
+    .badge-datetime { background: #e0e7ff; color: #4338ca; }
+    .badge-categorical { background: var(--primary-light); color: var(--primary); }
+    .badge-numerical { background: #ccfbf1; color: #0d9488; }
+
+    /* Step 3: Config */
+    .config-table .data-table td:first-child { font-weight: 500; }
+    .config-table .data-table td:nth-child(2) { color: var(--text-muted); }
+    .checkbox-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .checkbox-wrap input { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
+    .checkbox-wrap span { font-size: 0.9rem; }
+    .config-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 1rem;
+      padding: 1rem;
+      background: var(--surface-hover);
+      border-radius: var(--radius-sm);
+      border-left: 4px solid var(--primary);
+    }
+
+    /* Step 4: Results */
+    .quality-score { margin: 0.25rem 0 0; font-size: 0.85rem; }
+    .result-status {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    .result-status.success { background: var(--success-bg); color: var(--success); }
+    .result-status.error { background: var(--error-bg); color: var(--error); }
+    .result-status.warning { background: var(--warning-bg); color: var(--warning); }
+    .result-status svg { width: 24px; height: 24px; flex-shrink: 0; }
+    .result-cards {
+      display: grid;
+      gap: 1rem;
+    }
+    .result-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+    }
+    .result-card:hover { border-color: var(--primary); background: var(--primary-light); }
+    .result-card-info h4 { margin: 0 0 0.25rem; font-size: 1rem; }
+    .result-card-info p { margin: 0; font-size: 0.9rem; color: var(--text-muted); }
+    .result-score {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--success);
+    }
+    .result-actions { display: flex; gap: 0.5rem; }
+    .result-actions .btn { padding: 0.5rem 1rem; font-size: 0.9rem; }
+
+    .step4-content-area {
+      min-height: 200px;
+      padding: 1rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface-hover);
+      overflow: auto;
+      margin-top: 1rem;
+    }
+    .step4-content-area:empty::before {
+      content: "Select a table above and click Preview, Compare, or Download.";
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .step4-compare-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .step4-compare-half { flex: 1; min-width: 280px; }
+    .step4-error-msg {
+      min-height: 1.5rem;
+      margin-bottom: 1rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      background: var(--error-bg);
+      color: var(--error);
+    }
+    .step4-error-msg:empty { display: none; }
+
+    .footer-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      margin-top: auto;
+    }
+    .footer-actions .btn { min-width: 120px; }
+
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .empty-state svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 1rem;
+      opacity: .5;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-sm);
+      background: var(--text);
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      transition: transform .25s ease, opacity .25s ease;
+      z-index: 1000;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--error); }
+
+    /* Icons */
+    .icon { display: inline-block; vertical-align: middle; }
+
+    /* Data Preview */
+    .preview-stats { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+    .preview-table-wrap { max-height: 320px; overflow: auto; }
+    .preview-table-wrap .data-table-wrap { max-height: inherit; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .2s, visibility .2s;
+    }
+    .modal-overlay.show { opacity: 1; visibility: visible; }
+    .modal {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      max-width: 96vw;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      width: 720px;
+    }
+    .modal.modal-compare { width: min(960px, 96vw); }
+    .modal-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .modal-header h3 { margin: 0; font-size: 1rem; font-weight: 600; }
+    .modal-close {
+      padding: 0.35rem;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      display: flex;
+    }
+    .modal-close:hover { background: var(--surface-hover); color: var(--text); }
+    .modal-body { padding: 1.25rem; overflow: auto; flex: 1; }
+    .compare-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+    .compare-half {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+    .compare-half h4 {
+      margin: 0;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: var(--surface-hover);
+      border-bottom: 1px solid var(--border);
+    }
+    .compare-half .preview-table-wrap { max-height: 280px; }
+    .compare-footer { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.75rem; }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .header { padding: 0.75rem 1rem; flex-wrap: wrap; }
+      .logo-sub { margin-left: 0; width: 100%; }
+      .stepper { padding: 0.5rem 1rem; }
+      .step { padding: 0.4rem 0.75rem; font-size: 0.85rem; }
+      .step-connector { width: 12px; }
+      .main { padding: 1rem; }
+      .card-body { padding: 1rem; }
+      .dropzone { padding: 1.5rem; }
+      .footer-actions { padding: 1rem; flex-direction: column; }
+      .result-card { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+      .result-actions { flex-wrap: wrap; }
+      .compare-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <span class="logo-text">AnonymizationUI</span>
+      <span class="logo-sub">Data Anonymization Workbench</span>
+    </header>
+
+    <nav class="stepper">
+      <div class="step active" data-step="1">
+        <span class="step-num">1</span>
+        <span>Upload Data</span>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step" data-step="2">
+        <span class="step-num">2</span>
+        <span>PII Scan</span>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step" data-step="3">
+        <span class="step-num">3</span>
+        <span>Configure Rules</span>
+      </div>
+      <div class="step-connector"></div>
+      <div class="step" data-step="4">
+        <span class="step-num">4</span>
+        <span>Results</span>
+      </div>
+    </nav>
+
+    <main class="main">
+      <!-- Step 1: Upload -->
+      <section class="panel active" id="panel-1">
+        <div class="card">
+          <div class="card-header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Select Data Source
+          </div>
+          <div class="card-body">
+            <input type="file" id="file-input" accept=".csv,.xls,.xlsx" multiple hidden />
+            <div class="dropzone" id="dropzone">
+              <div class="dropzone-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div class="dropzone-title">Drag files here or click to select</div>
+              <div class="dropzone-hint">Supports .csv, .xls, .xlsx. Multiple files or folder.</div>
+            </div>
+            <ul class="file-list" id="file-list"></ul>
+          </div>
+        </div>
+        <div class="card" id="card-data-preview">
+          <div class="card-header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            Data Preview
+          </div>
+          <div class="card-body">
+            <div id="preview-empty" class="empty-state">No data to preview. Select files above.</div>
+            <div id="preview-content" style="display: none;">
+              <div id="preview-select-row" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                <label for="preview-file-select" style="font-weight: 500;">Preview</label>
+                <select class="table-select" id="preview-file-select" style="max-width: 280px;"></select>
+              </div>
+              <div class="preview-stats" id="preview-stats"></div>
+              <div id="preview-table-container" class="preview-table-wrap"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 2: PII Scan -->
+      <section class="panel" id="panel-2">
+        <div class="card">
+          <div class="card-header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            PII Scan
+          </div>
+          <div class="card-body">
+            <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+              <label for="table-select" style="font-weight: 500;">Select table</label>
+              <select class="table-select" id="table-select">
+                <option value="">Please upload a file in Step 1</option>
+              </select>
+              <button type="button" class="btn btn-primary" id="btn-scan">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Start Scan
+              </button>
+            </div>
+            <div class="scan-summary">
+              <div class="scan-stat value">
+                <div class="scan-stat-label">PII detected</div>
+                <div class="scan-stat-value" id="stat-pii-total">0</div>
+              </div>
+              <div class="scan-stat">
+                <div class="scan-stat-label">Columns affected</div>
+                <div class="scan-stat-value" id="stat-cols-affected">0</div>
+              </div>
+              <div class="scan-stat warning">
+                <div class="scan-stat-label">High confidence (≥0.9)</div>
+                <div class="scan-stat-value" id="stat-high-confidence">0</div>
+              </div>
+            </div>
+            <div class="data-table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Row</th>
+                    <th>Column</th>
+                    <th>PII Type</th>
+                    <th>Confidence</th>
+                    <th>Original</th>
+                  </tr>
+                </thead>
+                <tbody id="scan-results-body">
+                  <tr>
+                    <td>2</td>
+                    <td>TIMESTAMP</td>
+                    <td><span class="badge badge-pii">DATE_TIME</span></td>
+                    <td>0.92</td>
+                    <td>01.15.2020 08:00</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>LOCATION</td>
+                    <td><span class="badge badge-pii">LOCATION</span></td>
+                    <td>0.88</td>
+                    <td>Btc Tower</td>
+                  </tr>
+                  <tr>
+                    <td>5</td>
+                    <td>TIMESTAMP</td>
+                    <td><span class="badge badge-pii">DATE_TIME</span></td>
+                    <td>0.91</td>
+                    <td>01.15.2020 12:00</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 3: Config -->
+      <section class="panel" id="panel-3">
+        <div class="card">
+          <div class="card-header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+            Configure Anonymization Rules
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom: 1rem;">
+              <label for="config-table-select" style="font-weight: 500;">Select table</label>
+              <select class="table-select" id="config-table-select" style="margin-left: 0.5rem;">
+                <option value="">Please upload a file in Step 1</option>
+              </select>
+            </div>
+            <div class="data-table-wrap">
+              <table class="data-table config-table">
+                <thead>
+                  <tr>
+                    <th>Column</th>
+                    <th>Detected type</th>
+                    <th>Force PII</th>
+                    <th>Exempt</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td colspan="4" class="empty-state" style="text-align:center;">Run PII Scan in Step 2 to populate.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="config-desc">
+              <strong>Note:</strong> &ldquo;Force PII&rdquo; anonymizes the column as sensitive data; &ldquo;Exempt&rdquo; keeps the original distribution without anonymization. They are mutually exclusive; exempt takes precedence.
+            </div>
+            <div class="actions" style="margin-top: 1rem;">
+              <button type="button" class="btn btn-primary" id="btn-save-config">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Save Config
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 4: Results -->
+      <section class="panel" id="panel-4">
+        <div class="card" id="card-step4-results">
+          <div class="card-header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Results
+          </div>
+          <div class="card-body">
+            <!-- Section A: Anonymize -->
+            <p class="config-desc" style="margin: 0 0 0.75rem;">Upload files in Step 1, run PII scan in Step 2, configure columns in Step 3, then click below to anonymize.</p>
+            <div id="step4-config-hint" class="config-hint" style="display: none; margin-bottom: 0.75rem; font-size: 0.9rem; color: var(--text-muted);"></div>
+            <!-- Source table (Step 1 files) -->
+            <div id="step4-source-section" style="margin-bottom: 1rem;">
+              <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                <label for="step4-source-table-select" style="font-weight: 500;">Select table (source)</label>
+                <select class="table-select" id="step4-source-table-select" style="max-width: 280px;">
+                  <option value="">Please upload a file in Step 1</option>
+                </select>
+              </div>
+            </div>
+            <div class="actions" style="margin-bottom: 0.5rem;">
+              <button type="button" class="btn btn-primary" id="btn-anonymize">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Anonymize
+              </button>
+            </div>
+            <div id="step4-error-msg" class="step4-error-msg" role="alert" aria-live="polite"></div>
+
+            <!-- Section B: Synthetic result selection (visible when synthetic tables exist) -->
+            <div id="step4-table-section" style="display: none; margin-bottom: 1rem;">
+              <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                <label for="step4-table-select" style="font-weight: 500;">Synthetic result</label>
+                <select class="table-select" id="step4-table-select" style="max-width: 280px;">
+                  <option value="">—</option>
+                </select>
+                <span id="step4-quality-badge" class="badge badge-numerical" style="display: none;"></span>
+              </div>
+            </div>
+
+            <!-- Section C: Actions -->
+            <div id="step4-actions" style="display: none; margin-bottom: 1rem;">
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button type="button" class="btn btn-secondary" id="btn-step4-preview">Preview</button>
+                <button type="button" class="btn btn-secondary" id="btn-step4-compare">Compare</button>
+                <button type="button" class="btn btn-primary" id="btn-step4-download">Download CSV</button>
+              </div>
+            </div>
+
+            <!-- Section D: Content Area -->
+            <div id="step4-content-area" class="step4-content-area"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal" id="modal">
+        <div class="modal-header">
+          <h3 id="modal-title"></h3>
+          <button type="button" class="modal-close" id="modal-close" aria-label="Close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="modal-body" id="modal-body"></div>
+      </div>
+    </div>
+
+    <footer class="footer-actions">
+      <button type="button" class="btn btn-secondary" id="btn-prev" disabled>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Previous
+      </button>
+      <div style="color: var(--text-muted); font-size: 0.9rem;">Step <span id="step-num">1</span> / 4</div>
+      <button type="button" class="btn btn-primary" id="btn-next">
+        Next
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </footer>
+  </div>
+
+  <script src="../src/step1.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+  <script src="../src/step2.js"></script>
+  <script src="../src/step3.js"></script>
+  <script src="../src/step4.js"></script>
+  <script>
+    /** @type { number } Current step (1–4) */
+    let currentStep = 1;
+
+    /** @type { HTMLElement[] } Step buttons */
+    const steps = document.querySelectorAll('.stepper .step');
+
+    /** @type { HTMLElement[] } Content panels */
+    const panels = document.querySelectorAll('.panel');
+
+    /** @type { HTMLElement } Previous button */
+    const btnPrev = document.getElementById('btn-prev');
+
+    /** @type { HTMLElement } Next button */
+    const btnNext = document.getElementById('btn-next');
+
+    /** @type { HTMLElement } Step number display */
+    const stepNumEl = document.getElementById('step-num');
+
+    /** @type { number } Toast timer */
+    let toastTimer = 0;
+
+    /**
+     * Show toast message.
+     * @param { string } message - Message text
+     * @param { 'default' | 'success' | 'error' } [type='default'] - Type
+     * @param { number } [duration=2500] - Duration (ms)
+     */
+    function showToast(message, type, duration) {
+      type = type || 'default';
+      duration = duration || 2500;
+      const el = document.getElementById('toast');
+      if (!el) return;
+      clearTimeout(toastTimer);
+      el.textContent = message;
+      el.className = 'toast show ' + (type !== 'default' ? type : '');
+      toastTimer = setTimeout(function () {
+        el.classList.remove('show');
+      }, duration);
+    }
+
+    /**
+     * Switch to the given step and update UI state.
+     * @param { number } step - Step number 1–4
+     */
+    function goToStep(step) {
+      currentStep = Math.max(1, Math.min(4, step));
+      stepNumEl.textContent = String(currentStep);
+
+      steps.forEach((el, i) => {
+        const n = i + 1;
+        el.classList.remove('active', 'done');
+        if (n === currentStep) el.classList.add('active');
+        else if (n < currentStep) el.classList.add('done');
+      });
+
+      panels.forEach((el, i) => {
+        el.classList.toggle('active', i + 1 === currentStep);
+      });
+
+      /** When entering Step 4, sync source table dropdown with Step 1 fileStore */
+      if (currentStep === 4 && window.Step4 && typeof window.Step4.refreshSourceDropdown === 'function') {
+        window.Step4.refreshSourceDropdown();
+      }
+
+      btnPrev.disabled = currentStep === 1;
+      /** @type { string } */
+      const nextLabel = currentStep === 4 ? 'Done' : 'Next';
+      btnNext.textContent = '';
+      btnNext.appendChild(document.createTextNode(nextLabel));
+      if (currentStep < 4) {
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.setAttribute('width', '18');
+        svg.setAttribute('height', '18');
+        svg.innerHTML = '<polyline points="9 18 15 12 9 6" fill="none" stroke="currentColor" stroke-width="2"/>';
+        btnNext.appendChild(svg);
+      }
+    }
+
+    /** Stepper click */
+    steps.forEach((el) => {
+      el.addEventListener('click', () => {
+        const step = parseInt(el.dataset.step, 10);
+        if (!isNaN(step)) goToStep(step);
+      });
+    });
+
+    btnPrev.addEventListener('click', function () { goToStep(currentStep - 1); });
+    btnNext.addEventListener('click', function () {
+      if (currentStep < 4) goToStep(currentStep + 1);
+      else showToast('Flow completed.', 'success');
+    });
+
+    /** Step 1: init from src/step1.js */
+    /** @type { string } API base URL (same-origin by default) */
+    var API_BASE_URL = window.API_BASE_URL || window.location.origin;
+    window.API_BASE_URL = API_BASE_URL;
+    window.showToast = showToast;
+    if (window.Step1 && typeof window.Step1.initStep1 === 'function') {
+      window.Step1.initStep1({ onToast: showToast });
+    }
+
+    /** Step 2: init (uses step1:data-change for sync) */
+    if (window.Step2 && typeof window.Step2.init === 'function') {
+      window.Step2.init();
+    }
+
+    /** Step 4: init Generate Metadata + Regenerate */
+    if (window.Step4 && typeof window.Step4.init === 'function') {
+      window.Step4.init({ onToast: showToast, apiBaseUrl: API_BASE_URL });
+    }
+
+    /** Step 3: sync config-table-select with Step 1 files */
+    document.addEventListener('step1:data-change', function (e) {
+      var files = (e.detail && e.detail.files) ? e.detail.files : [];
+      var supported = files.filter(function (f) { return f && f.name && /\.(csv|xls|xlsx)$/i.test(f.name); });
+      var sel = document.getElementById('config-table-select');
+      if (!sel) return;
+      var cur = sel.value;
+      sel.innerHTML = supported.length ? '' : '<option value="">Please upload a file in Step 1</option>';
+      supported.forEach(function (f) {
+        var opt = document.createElement('option');
+        opt.value = f.name;
+        opt.textContent = (window.Step1 && window.Step1.tableNameFromFilename) ? window.Step1.tableNameFromFilename(f.name) : f.name.replace(/\.(csv|xls|xlsx)$/i, '');
+        if (f.name === cur) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    });
+    if (window.Step1 && typeof window.Step1.fileStore === 'function') {
+      document.dispatchEvent(new CustomEvent('step1:data-change', { detail: { files: window.Step1.fileStore() } }));
+    }
+
+    /** Step 3: Save config calls API */
+    document.getElementById('btn-save-config')?.addEventListener('click', function () {
+      var b = this;
+      var sel = document.getElementById('config-table-select');
+      var tableFile = sel ? sel.value : '';
+      if (!tableFile) {
+        showToast('Please select a table.', 'error');
+        return;
+      }
+      var valid = window.validateStep3Config && window.validateStep3Config();
+      if (valid && !valid.valid) {
+        showToast(valid.message || 'Please configure each column.', 'error');
+        return;
+      }
+      var exempt = [];
+      var forcePii = [];
+      var tbody = document.querySelector('#panel-3 .config-table tbody');
+      if (tbody) {
+        tbody.querySelectorAll('tr').forEach(function (tr) {
+          var col = tr.querySelector('td:first-child');
+          var colName = col ? col.textContent.trim() : '';
+          if (!colName) return;
+          var forceChk = tr.querySelector('.force-pii-chk') || tr.querySelector('td:nth-child(3) input[type="checkbox"]');
+          var exemptChk = tr.querySelector('.exempt-chk') || tr.querySelector('td:nth-child(4) input[type="checkbox"]');
+          if (exemptChk && exemptChk.checked) exempt.push(colName);
+          if (forceChk && forceChk.checked) forcePii.push(colName);
+        });
+      }
+      b.disabled = true;
+      b.style.opacity = '0.7';
+      fetch(API_BASE_URL + '/api/config/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source_file_path: tableFile,
+          user_config: { exempt_columns: exempt, force_pii_columns: forcePii }
+        })
+      })
+        .then(function (res) { return res.ok ? res.json() : res.json().then(function (r) { throw new Error(r.message || r.detail || 'Request failed'); }); })
+        .then(function () {
+          b.disabled = false;
+          b.style.opacity = '';
+          showToast('Config saved.', 'success');
+        })
+        .catch(function (err) {
+          b.disabled = false;
+          b.style.opacity = '';
+          showToast('Save failed: ' + (err.message || err), 'error');
+        });
+    });
+    /** Modal: open, close, Preview, Compare */
+    var modalOverlay = document.getElementById('modal-overlay');
+    var modal = document.getElementById('modal');
+    var modalTitle = document.getElementById('modal-title');
+    var modalBody = document.getElementById('modal-body');
+    var modalClose = document.getElementById('modal-close');
+
+    function closeModal() {
+      if (modalOverlay) modalOverlay.classList.remove('show');
+    }
+    function openModal(title, bodyHTML) {
+      if (modalTitle) modalTitle.textContent = title;
+      if (modalBody) modalBody.innerHTML = bodyHTML;
+      if (modal) modal.classList.remove('modal-compare');
+      if (modalOverlay) modalOverlay.classList.add('show');
+    }
+
+    if (modalClose) modalClose.addEventListener('click', closeModal);
+    if (modalOverlay) modalOverlay.addEventListener('click', function (e) {
+      if (e.target === modalOverlay) closeModal();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modalOverlay && modalOverlay.classList.contains('show')) closeModal();
+    });
+    if (modal) modal.addEventListener('click', function (e) { e.stopPropagation(); });
+
+    /** Preview/Compare are handled by Step 4 when rendering result cards. */
+    goToStep(1);
+  </script>
+</body>
+</html>

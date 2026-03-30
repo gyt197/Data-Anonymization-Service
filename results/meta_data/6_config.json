@@ -1,0 +1,11 @@
+{
+    "exempt_columns": [
+        "ENERGY_SOURCE",
+        "MEASURE"
+    ],
+    "force_pii_columns": [
+        "DATE",
+        "TIMESTAMP",
+        "UNIT_OF_MEASURE"
+    ]
+}

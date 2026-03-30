@@ -1,0 +1,23 @@
+{
+    "tables": {
+        "4": {
+            "columns": {
+                "Data": {
+                    "datetime_format": "%Y/%m/%d %H:%M",
+                    "sdtype": "datetime"
+                },
+                " Produzida": {
+                    "sdtype": "numerical"
+                },
+                " Espec\u00edfica": {
+                    "sdtype": "numerical"
+                },
+                " CO2 Evitado": {
+                    "sdtype": "numerical"
+                }
+            }
+        }
+    },
+    "relationships": [],
+    "METADATA_SPEC_VERSION": "V1"
+}

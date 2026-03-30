@@ -1,0 +1,23 @@
+{
+    "tables": {
+        "5": {
+            "columns": {
+                "d": {
+                    "sdtype": "numerical"
+                },
+                "dt": {
+                    "sdtype": "categorical"
+                },
+                "ts": {
+                    "datetime_format": "%Y-%m-%dT%H:%M:%S.%f%z",
+                    "sdtype": "datetime"
+                },
+                "q": {
+                    "sdtype": "categorical"
+                }
+            }
+        }
+    },
+    "relationships": [],
+    "METADATA_SPEC_VERSION": "V1"
+}

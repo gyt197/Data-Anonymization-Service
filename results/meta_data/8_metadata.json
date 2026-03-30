@@ -1,0 +1,39 @@
+{
+    "tables": {
+        "8": {
+            "columns": {
+                "_Actor_type": {
+                    "sdtype": "categorical"
+                },
+                "_City": {
+                    "pii": true,
+                    "sdtype": "city"
+                },
+                "_Country": {
+                    "sdtype": "categorical"
+                },
+                "_GPS": {
+                    "sdtype": "categorical"
+                },
+                "_Project": {
+                    "sdtype": "categorical"
+                },
+                "_RBAC": {
+                    "sdtype": "categorical"
+                },
+                "_Service": {
+                    "sdtype": "categorical"
+                },
+                "_User_name": {
+                    "sdtype": "categorical"
+                },
+                "__SMXtimestamp": {
+                    "datetime_format": "%m/%d/%Y %H:%M:%S",
+                    "sdtype": "datetime"
+                }
+            }
+        }
+    },
+    "relationships": [],
+    "METADATA_SPEC_VERSION": "V1"
+}

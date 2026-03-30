@@ -1,0 +1,10 @@
+﻿DATE,TIMESTAMP,LOCATION,ENERGY_SOURCE,MEASURE,UNIT_OF_MEASURE,INTERVAL,VALUE
+05.08.2021,05.08.2021 14:00,Tower BTC,district heating,billing meter total consumption,kWh,H,200
+05.08.2021,05.08.2021 15:00,Tower BTC,district heating,billing meter total consumption,kWh,H,200
+05.08.2021,05.08.2021 16:00,Tower BTC,district heating,billing meter total consumption,kWh,H,100
+05.08.2021,05.08.2021 17:00,Tower BTC,district heating,billing meter total consumption,kWh,H,100
+05.08.2021,05.08.2021 18:00,Tower BTC,district heating,billing meter total consumption,kWh,H,200
+05.08.2021,05.08.2021 19:00,Tower BTC,district heating,billing meter total consumption,kWh,H,100
+05.08.2021,05.08.2021 20:00,Tower BTC,district heating,billing meter total consumption,kWh,H,100
+05.08.2021,05.08.2021 21:00,Tower BTC,district heating,billing meter total consumption,kWh,H,100
+05.08.2021,05.08.2021 22:00,Tower BTC,district heating,billing meter total consumption,kWh,H,100

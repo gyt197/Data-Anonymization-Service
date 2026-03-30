@@ -1,0 +1,23 @@
+{
+    "tables": {
+        "1": {
+            "columns": {
+                "Month": {
+                    "datetime_format": "%Y/%m/%d",
+                    "sdtype": "datetime"
+                },
+                "Usage [kWh]": {
+                    "sdtype": "numerical"
+                },
+                "Cost (net in PLN)": {
+                    "sdtype": "numerical"
+                },
+                "Cost (gross in PLN)": {
+                    "sdtype": "numerical"
+                }
+            }
+        }
+    },
+    "relationships": [],
+    "METADATA_SPEC_VERSION": "V1"
+}

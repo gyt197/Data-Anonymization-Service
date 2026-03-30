@@ -1,0 +1,10 @@
+{
+    "exempt_columns": [
+        "Produzida",
+        "Específica",
+        "CO2 Evitado"
+    ],
+    "force_pii_columns": [
+        "Data"
+    ]
+}

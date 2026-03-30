@@ -1,0 +1,10 @@
+{
+    "exempt_columns": [
+        "Cost (net in PLN)",
+        "Cost (gross in PLN)"
+    ],
+    "force_pii_columns": [
+        "Month",
+        "Usage [kWh]"
+    ]
+}

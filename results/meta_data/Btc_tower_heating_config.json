@@ -1,0 +1,8 @@
+{
+    "exempt_columns": [
+        "Date"
+    ],
+    "force_pii_columns": [
+        "TIMESTAMP"
+    ]
+}

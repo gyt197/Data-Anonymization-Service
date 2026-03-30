@@ -1,0 +1,13 @@
+{
+    "exempt_columns": [
+        "MEASURE",
+        "UNIT_OF_MEASURE",
+        "INTERVAL",
+        "VALUE"
+    ],
+    "force_pii_columns": [
+        "DATE",
+        "TIMESTAMP",
+        "LOCATION"
+    ]
+}

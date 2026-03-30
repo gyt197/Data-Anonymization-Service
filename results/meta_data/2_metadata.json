@@ -1,0 +1,33 @@
+{
+    "tables": {
+        "2": {
+            "primary_key": "Hora",
+            "columns": {
+                "Data": {
+                    "datetime_format": "%Y-%m-%d",
+                    "sdtype": "datetime"
+                },
+                "Dia": {
+                    "sdtype": "categorical"
+                },
+                "Hora": {
+                    "sdtype": "id"
+                },
+                "BTN A": {
+                    "sdtype": "numerical"
+                },
+                "BTN B": {
+                    "sdtype": "numerical"
+                },
+                "BTN C": {
+                    "sdtype": "numerical"
+                },
+                "IP": {
+                    "sdtype": "numerical"
+                }
+            }
+        }
+    },
+    "relationships": [],
+    "METADATA_SPEC_VERSION": "V1"
+}
