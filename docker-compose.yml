@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  data-anonymization:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: data-anonymization-service
+    ports:
+      - "8000:8000"       # FastAPI / Uvicorn
+    volumes:
+      - ./raw_data:/app/raw_data     # drop input files here
+      - ./results:/app/results       # anonymized output appears here
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
