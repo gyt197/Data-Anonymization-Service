@@ -181,12 +181,60 @@
     var area = document.getElementById('step4-content-area');
     if (!area) return;
 
-    var url = (baseUrl || API_BASE).replace(/\/$/, '') + '/api/synthetic/' + encodeURIComponent(tableName);
-    area.innerHTML =
-      '<p style="margin-bottom: 1rem;">Download synthetic data as CSV (table format).</p>' +
-      '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener" class="btn btn-primary">Download CSV</a>';
+    /**
+     * Downloads synthetic CSV as a local file via Blob.
+     * Avoids opening CSV text in a new browser tab.
+     * @param {string} selectedTableName - Selected table name
+     * @returns {Promise<void>}
+     */
+    function downloadSyntheticCsv(selectedTableName) {
+      var safeTableName = (selectedTableName || 'table').replace(/[^\w.-]/g, '_');
+      var filename = 'synthetic_' + safeTableName + '.csv';
+      var url = (baseUrl || API_BASE).replace(/\/$/, '') + '/api/synthetic/' + encodeURIComponent(selectedTableName);
 
-    if (onToast) onToast('Click the button above to download.', 'success');
+      return fetch(url)
+        .then(function (res) {
+          if (!res.ok) throw new Error('Failed to download synthetic CSV: ' + res.status);
+          return res.text();
+        })
+        .then(function (csvText) {
+          var blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+          var objectUrl = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = objectUrl;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(objectUrl);
+        });
+    }
+
+    area.innerHTML = '<p style="margin-bottom: 1rem;">Download synthetic data as CSV (single file).</p>';
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn btn-primary';
+    btn.textContent = 'Download CSV';
+    area.appendChild(btn);
+
+    btn.addEventListener('click', function () {
+      btn.disabled = true;
+      var originalLabel = btn.textContent;
+      btn.textContent = 'Downloading…';
+      downloadSyntheticCsv(tableName)
+        .then(function () {
+          if (onToast) onToast('CSV downloaded: synthetic_' + tableName + '.csv', 'success');
+        })
+        .catch(function (err) {
+          if (onToast) onToast('Download failed: ' + (err.message || String(err)), 'error');
+        })
+        .finally(function () {
+          btn.disabled = false;
+          btn.textContent = originalLabel;
+        });
+    });
+
+    if (onToast) onToast('Click the button above to download CSV file.', 'success');
   }
 
   /** Shared scores map for badge updates when table selection changes */
@@ -234,14 +282,7 @@
     });
 
     if (badge) {
-      var v = sel.value || tables[0];
-      var sc = scores[v];
-      if (sc != null && !isNaN(sc)) {
-        badge.textContent = 'Quality: ' + (Math.round(sc * 1000) / 10) + '%';
-        badge.style.display = 'inline';
-      } else {
-        badge.style.display = 'none';
-      }
+      badge.style.display = 'none';
     }
   }
 
@@ -380,9 +421,8 @@
           .then(function (report) {
             setStep4Error('');
             if (report.errors && report.errors.length) {
-              var errText = 'Anonymization completed with errors: ' + report.errors.join('; ');
-              setStep4Error(errText);
-              if (onToast) onToast(errText, 'error');
+              try { console.warn('Step4 anonymization warnings:', report.errors); } catch (e) {}
+              if (onToast) onToast('Anonymization completed. Some files failed to process.', 'default');
             } else {
               if (onToast) onToast('Anonymization complete. Processed ' + (report.processed_files || []).length + ' file(s).', 'success');
             }
@@ -396,10 +436,7 @@
               var sel = document.getElementById('step4-table-select');
               if (sel) sel.value = tables[0];
               var badge = document.getElementById('step4-quality-badge');
-              if (badge && scores[tables[0]] != null) {
-                badge.textContent = 'Quality: ' + (Math.round(scores[tables[0]] * 1000) / 10) + '%';
-                badge.style.display = 'inline';
-              }
+              if (badge) badge.style.display = 'none';
             } else {
               return fetchSyntheticTables(baseUrl).then(function (data) {
                 refreshTableDropdown(data.tables, data.scores, baseUrl);
@@ -449,14 +486,7 @@
       tableSel.addEventListener('change', function () {
         var badge = document.getElementById('step4-quality-badge');
         if (!badge) return;
-        var v = this.value;
-        var sc = step4Scores[v];
-        if (v && sc != null && !isNaN(sc)) {
-          badge.textContent = 'Quality: ' + (Math.round(sc * 1000) / 10) + '%';
-          badge.style.display = 'inline';
-        } else {
-          badge.style.display = 'none';
-        }
+        badge.style.display = 'none';
       });
     }
 

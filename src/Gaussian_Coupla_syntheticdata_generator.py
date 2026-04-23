@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import math
 
 import pandas as pd
 from sdv.metadata import SingleTableMetadata
@@ -116,10 +117,11 @@ def apply_user_config_to_metadata(metadata, table_name, config_dir):
         )
 
         for col in force_cols:
-            print(f"      -> Forcing column '{col}' (runtime sdtype=unknown, pii=True)")
-            # NOTE: SDV does not support sdtype='pii'. In SDV, PII is expressed via the `pii`
-            # flag on columns with sdtype='unknown' (or other sdtypes where `pii=True`).
-            metadata.update_column(column_name=col, sdtype='unknown', pii=True)
+            current_sdtype = metadata.columns.get(col, {}).get('sdtype')
+            # Keep SDV-detected type for force columns so generation stays type-consistent
+            # (e.g., datetime-like columns remain datetime-like). We only keep the column in
+            # resolved_config for downstream reporting and conflict handling.
+            print(f"      -> Force column '{col}' (keep runtime sdtype={current_sdtype})")
 
         for col in exempt_cols:
             current_sdtype = metadata.columns.get(col, {}).get('sdtype')
@@ -287,7 +289,14 @@ def generate_synthetic_data_with_config(inputfile_path: str) -> dict:
             # 6. Quality Evaluation
             print("   Evaluating Quality...")
             quality_report = evaluate_quality(real_data, synthetic_data, metadata)
-            overall_score = quality_report.get_score()
+            raw_score = quality_report.get_score()
+            try:
+                overall_score = float(raw_score)
+            except Exception:
+                overall_score = None
+            if overall_score is None or not math.isfinite(overall_score):
+                print(f"   ⚠️ Invalid overall_score for table '{table_name}': {raw_score}")
+                overall_score = None
 
             # 7. Save Results
             synth_path = os.path.join(paths['synthetic'], f"synthetic_{table_name}.csv")
@@ -304,7 +313,10 @@ def generate_synthetic_data_with_config(inputfile_path: str) -> dict:
                 "score": overall_score,
                 "saved_synth": synth_path
             })
-            print(f"   ✅ Done! Score: {overall_score:.4f}")
+            if overall_score is None:
+                print("   ✅ Done! Score: N/A")
+            else:
+                print(f"   ✅ Done! Score: {overall_score:.4f}")
 
         except Exception as e:
             error_msg = f"Failed to process {filename}: {str(e)}"
