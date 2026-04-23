@@ -1,0 +1,10 @@
+DATE,TIMESTAMP,LOCATION,ENERGY_SOURCE,MEASURE,UNIT_OF_MEASURE,INTERVAL,"VALUE,"
+01.01.2021,01.01.2021 01:00,Atlantis waterpark,electricity,billing meter,kWh,H,60
+01.01.2021,01.01.2021 01:00,Atlantis waterpark,district heating,billing meter (network),kWh,H,110
+01.01.2021,01.01.2021 01:00,Atlantis waterpark,waste heat,billing meter (waste heat),kWh,H,0
+01.01.2021,01.01.2021 01:00,Atlantis waterpark,water supply (network),billing meter (network),m3,H,0
+01.01.2021,01.01.2021 01:00,Atlantis waterpark,water  supply (well),billing meter (well),m3,H,0
+01.01.2021,01.01.2021 02:00,Atlantis waterpark,electricity,billing meter,kWh,H,60
+01.01.2021,01.01.2021 02:00,Atlantis waterpark,district heating,billing meter (network),kWh,H,110
+01.01.2021,01.01.2021 02:00,Atlantis waterpark,waste heat,billing meter (waste heat),kWh,H,0
+01.01.2021,01.01.2021 02:00,Atlantis waterpark,water supply (network),billing meter (network),m3,H,0

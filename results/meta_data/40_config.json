@@ -1,0 +1,14 @@
+{
+    "exempt_columns": [
+        "Timestamp",
+        "Battery Level",
+        "1_Active energy+",
+        "1_Active Power+",
+        "1_RSSI",
+        "2_Active Power+",
+        "2_Active Energy+"
+    ],
+    "force_pii_columns": [
+        "2_RSSI"
+    ]
+}

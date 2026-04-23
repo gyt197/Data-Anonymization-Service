@@ -1,0 +1,69 @@
+{
+    "tables": {
+        "10": {
+            "primary_key": "Registration number",
+            "columns": {
+                "Registration number": {
+                    "sdtype": "id"
+                },
+                "Registration date": {
+                    "datetime_format": "%Y-%m-%d",
+                    "sdtype": "datetime"
+                },
+                "Building use type": {
+                    "sdtype": "categorical"
+                },
+                "Building use": {
+                    "sdtype": "categorical"
+                },
+                "Direction": {
+                    "sdtype": "categorical"
+                },
+                "longitude": {
+                    "pii": true,
+                    "sdtype": "longitude"
+                },
+                "latitude": {
+                    "pii": true,
+                    "sdtype": "latitude"
+                },
+                "Municipality": {
+                    "sdtype": "categorical"
+                },
+                "Province": {
+                    "pii": true,
+                    "sdtype": "administrative_unit"
+                },
+                "primary consumption ratio": {
+                    "sdtype": "numerical"
+                },
+                "Primary energy label": {
+                    "sdtype": "categorical"
+                },
+                "CO2 emissions ratio": {
+                    "sdtype": "numerical"
+                },
+                "CO2 emitions Rating": {
+                    "sdtype": "categorical"
+                },
+                "Heating demand ratio": {
+                    "sdtype": "numerical"
+                },
+                "Heating demand rating": {
+                    "sdtype": "categorical"
+                },
+                "Cooling demand ratio": {
+                    "sdtype": "numerical"
+                },
+                "Cooling demand ratio.1": {
+                    "sdtype": "categorical"
+                },
+                "Position,,,": {
+                    "sdtype": "categorical"
+                }
+            }
+        }
+    },
+    "relationships": [],
+    "METADATA_SPEC_VERSION": "V1"
+}

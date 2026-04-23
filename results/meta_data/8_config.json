@@ -1,0 +1,15 @@
+{
+    "exempt_columns": [
+        "_RBAC",
+        "_Service",
+        "_User_name"
+    ],
+    "force_pii_columns": [
+        "_Actor_type",
+        "_City",
+        "_Country",
+        "_GPS",
+        "_Project",
+        "__SMXtimestamp"
+    ]
+}

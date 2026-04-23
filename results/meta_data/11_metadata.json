@@ -1,0 +1,33 @@
+{
+    "tables": {
+        "11": {
+            "columns": {
+                "DATE": {
+                    "datetime_format": "%Y-%m-%d",
+                    "sdtype": "datetime"
+                },
+                "TIMESTAMP": {
+                    "datetime_format": "%Y-%m-%d %H:%M:%S",
+                    "sdtype": "datetime"
+                },
+                "LOCATION": {
+                    "sdtype": "categorical"
+                },
+                "MEASURE": {
+                    "sdtype": "categorical"
+                },
+                "UNIT_OF_MEASURE": {
+                    "sdtype": "categorical"
+                },
+                "INTERVAL": {
+                    "sdtype": "categorical"
+                },
+                "VALUE": {
+                    "sdtype": "categorical"
+                }
+            }
+        }
+    },
+    "relationships": [],
+    "METADATA_SPEC_VERSION": "V1"
+}

@@ -1,0 +1,36 @@
+{
+    "tables": {
+        "14": {
+            "columns": {
+                "DATE": {
+                    "datetime_format": "%m.%d.%Y",
+                    "sdtype": "datetime"
+                },
+                "TIMESTAMP": {
+                    "datetime_format": "%m.%d.%Y %H:%M",
+                    "sdtype": "datetime"
+                },
+                "LOCATION": {
+                    "sdtype": "categorical"
+                },
+                "ENERGY_SOURCE": {
+                    "sdtype": "categorical"
+                },
+                "MEASURE": {
+                    "sdtype": "categorical"
+                },
+                "UNIT_OF_MEASURE": {
+                    "sdtype": "categorical"
+                },
+                "INTERVAL": {
+                    "sdtype": "categorical"
+                },
+                "VALUE,": {
+                    "sdtype": "numerical"
+                }
+            }
+        }
+    },
+    "relationships": [],
+    "METADATA_SPEC_VERSION": "V1"
+}

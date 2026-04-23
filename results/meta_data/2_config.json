@@ -1,13 +1,13 @@
 {
     "exempt_columns": [
         "Data",
-        "Dia"
+        "Hora",
+        "BTN B",
+        "IP"
     ],
     "force_pii_columns": [
-        "Hora",
+        "Dia",
         "BTN A",
-        "BTN B",
-        "BTN C",
-        "IP"
+        "BTN C"
     ]
 }

@@ -1,0 +1,24 @@
+{
+    "exempt_columns": [
+        "Building use type",
+        "Building use",
+        "Province",
+        "primary consumption ratio",
+        "Primary energy label",
+        "CO2 emissions ratio",
+        "CO2 emitions Rating",
+        "Heating demand ratio",
+        "Heating demand rating",
+        "Cooling demand ratio"
+    ],
+    "force_pii_columns": [
+        "Registration number",
+        "Registration date",
+        "Direction",
+        "longitude",
+        "latitude",
+        "Municipality",
+        "Cooling demand ratio.1",
+        "Position,,,"
+    ]
+}

@@ -1,0 +1,26 @@
+{
+    "tables": {
+        "16": {
+            "columns": {
+                "Building": {
+                    "sdtype": "categorical"
+                },
+                "Apartment": {
+                    "sdtype": "categorical"
+                },
+                "Heating (Kwh)": {
+                    "sdtype": "numerical"
+                },
+                "DHW (Kwh)": {
+                    "sdtype": "numerical"
+                },
+                "Date": {
+                    "datetime_format": "%Y-%m-%d",
+                    "sdtype": "datetime"
+                }
+            }
+        }
+    },
+    "relationships": [],
+    "METADATA_SPEC_VERSION": "V1"
+}

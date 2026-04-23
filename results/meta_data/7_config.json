@@ -1,0 +1,10 @@
+{
+    "exempt_columns": [
+        "Dados de Consumo kW",
+        "Dados de Produção kW"
+    ],
+    "force_pii_columns": [
+        "Data",
+        "Hora"
+    ]
+}

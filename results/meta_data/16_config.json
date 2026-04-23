@@ -1,0 +1,11 @@
+{
+    "exempt_columns": [
+        "Apartment",
+        "DHW (Kwh)"
+    ],
+    "force_pii_columns": [
+        "Building",
+        "Heating (Kwh)",
+        "Date"
+    ]
+}

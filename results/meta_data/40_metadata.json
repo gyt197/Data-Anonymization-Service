@@ -1,0 +1,35 @@
+{
+    "tables": {
+        "40": {
+            "columns": {
+                "Timestamp": {
+                    "datetime_format": "%Y-%m-%d %H:%M:%S%z",
+                    "sdtype": "datetime"
+                },
+                "Battery Level": {
+                    "sdtype": "numerical"
+                },
+                "1_Active energy+": {
+                    "sdtype": "numerical"
+                },
+                "1_Active Power+": {
+                    "sdtype": "numerical"
+                },
+                "1_RSSI": {
+                    "sdtype": "numerical"
+                },
+                "2_Active Power+": {
+                    "sdtype": "categorical"
+                },
+                "2_Active Energy+": {
+                    "sdtype": "numerical"
+                },
+                "2_RSSI": {
+                    "sdtype": "numerical"
+                }
+            }
+        }
+    },
+    "relationships": [],
+    "METADATA_SPEC_VERSION": "V1"
+}

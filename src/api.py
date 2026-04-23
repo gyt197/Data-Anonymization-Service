@@ -8,6 +8,7 @@ After pip install: python -m spacy download en_core_web_sm
 import io
 import json
 import logging
+import math
 import os
 from typing import Any, List, Optional, Tuple
 
@@ -62,6 +63,17 @@ _UPLOADED_DATA_DIR = os.path.join(_PROJECT_ROOT, "results", "uploaded_data")
 _UI_DIR = os.path.join(_PROJECT_ROOT, "ui")
 _SRC_DIR = os.path.join(_PROJECT_ROOT, "src")
 _MAX_CELL_LENGTH = 10_000  # truncate cells longer than this for Presidio
+
+
+def _json_safe(value: Any):
+    """Recursively convert NaN/Inf floats to None for JSON-safe responses."""
+    if isinstance(value, float):
+        return value if math.isfinite(value) else None
+    if isinstance(value, dict):
+        return {k: _json_safe(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_json_safe(v) for v in value]
+    return value
 
 
 class MetadataGenerateRequest(BaseModel):
@@ -187,11 +199,12 @@ async def api_anonymize(
 
     # 4. Run GaussianCopula synthesis
     synth_report = generate_synthetic_data_with_config(_UPLOADED_DATA_DIR)
+    safe_report = _json_safe(synth_report)
     return {
-        "status": synth_report.get("status", "unknown"),
-        "processed_files": synth_report.get("processed_files", []),
-        "errors": synth_report.get("errors", []),
-        "summary": synth_report.get("summary", ""),
+        "status": safe_report.get("status", "unknown"),
+        "processed_files": safe_report.get("processed_files", []),
+        "errors": safe_report.get("errors", []),
+        "summary": safe_report.get("summary", ""),
     }
 
 

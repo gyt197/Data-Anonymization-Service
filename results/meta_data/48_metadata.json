@@ -1,0 +1,29 @@
+{
+    "tables": {
+        "48": {
+            "columns": {
+                "Timestamp": {
+                    "datetime_format": "%Y-%m-%d",
+                    "sdtype": "datetime"
+                },
+                "CALD1_OreFunz": {
+                    "sdtype": "numerical"
+                },
+                "CALD2_OreFunz": {
+                    "sdtype": "numerical"
+                },
+                "PdC_OreFunz": {
+                    "sdtype": "numerical"
+                },
+                "RT1_OreFunz": {
+                    "sdtype": "numerical"
+                },
+                "UTA3_OreFunz": {
+                    "sdtype": "numerical"
+                }
+            }
+        }
+    },
+    "relationships": [],
+    "METADATA_SPEC_VERSION": "V1"
+}
