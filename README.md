@@ -45,6 +45,7 @@ App: http://localhost:8000
 ```bash
 docker compose down
 ```
+![Docker Setup](Images/docker_setup.png)
 
 ## Install from Github
 ### 1) Clone the repository
