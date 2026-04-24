@@ -1,6 +1,6 @@
 # Data Anonymization Service
 
-SDV based tabular data anonymization tool with a 4-step workflow:
+[SDV](https://docs.sdv.dev/sdv) based tabular data anonymization tool with a 4-step workflow:
 
 1. Upload data (CSV / XLS / XLSX)
 2. Detect PII
