@@ -9,7 +9,7 @@
 3. Configure rules (`exempt_columns` / `force_pii_columns`)
 ![3_Config](Images/3_Config.png)
 4. Generate, preview, compare, and download synthetic data in csv format
-![4_result](Images/4_Final Results.png)
+![4_result](Images/4_Final_Results.png)
 
 ## Project Structure
 
