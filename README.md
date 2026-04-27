@@ -3,9 +3,13 @@
 [SDV](https://docs.sdv.dev/sdv) based tabular data anonymization tool with a 4-step workflow:
 
 1. Upload data (CSV / XLS / XLSX)
+![1_Dataupload](Images/1_Data_upload.png)
 2. Detect PII
+![2_Scan](Images/2_PII_Scan.png)
 3. Configure rules (`exempt_columns` / `force_pii_columns`)
+![3_Config](Images/3_Config.png)
 4. Generate, preview, compare, and download synthetic data in csv format
+![4_result](Images/4_Final Results.png)
 
 ## Project Structure
 
