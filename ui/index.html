@@ -777,11 +777,16 @@
 
             <!-- Section C: Actions -->
             <div id="step4-actions" style="display: none; margin-bottom: 1rem;">
-              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
                 <button type="button" class="btn btn-secondary" id="btn-step4-preview">Preview</button>
                 <button type="button" class="btn btn-secondary" id="btn-step4-compare">Compare</button>
                 <button type="button" class="btn btn-primary" id="btn-step4-download">Download CSV</button>
-                <button type="button" id="btn-step4-delete" class="btn btn-primary">Delete All Data</button>
+                <span style="width: 1px; background: var(--border, #ddd); align-self: stretch; margin: 0 0.25rem;"></span>
+                <button type="button" class="btn btn-danger" id="btn-step4-delete-all"
+                  title="Permanently delete all uploaded raw data and generated results"
+                  style="background: #dc3545; border-color: #dc3545; color: #fff;">
+                  🗑 Delete All Data
+                </button>
               </div>
             </div>
 
