@@ -20,9 +20,6 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from pathlib import Path
 
-_RESULTS_DIR  = Path(__file__).parent.parent / "results"
-_RAW_DIR      = Path(__file__).parent.parent / "results" / "uploaded_data"
-_METADATA_DIR = Path(__file__).parent.parent / "results" / "meta_data"
 
 
 try:
@@ -44,40 +41,6 @@ app.add_middleware(
 )
 
 
-@app.delete("/api/delete-all")
-def delete_all_data():
-    """
-    Wipes every file in results/, raw_data/ and metadata/.
-    Directories themselves are preserved so the service keeps running.
-    Returns a summary of deleted paths and any errors encountered.
-    """
-    target_dirs = [_RESULTS_DIR, _RAW_DIR, _METADATA_DIR]
-    deleted: list[str] = []
-    errors:  list[str] = []
- 
-    for directory in target_dirs:
-        if not directory.exists():
-            continue  # directory not created yet — nothing to delete
- 
-        for item in directory.iterdir():
-            try:
-                if item.is_file() or item.is_symlink():
-                    item.unlink()
-                    deleted.append(str(item.relative_to(directory.parent)))
-                elif item.is_dir():
-                    shutil.rmtree(item)
-                    deleted.append(str(item.relative_to(directory.parent)) + "/")
-            except Exception as exc:
-                errors.append(f"{item}: {exc}")
- 
-    return JSONResponse(
-        status_code=200,
-        content={
-            "deleted_files": deleted,
-            "errors": errors,
-            "message": f"Deleted {len(deleted)} item(s)."
-        }
-    )
 
 
 @app.on_event("startup")
@@ -396,6 +359,50 @@ def api_synthetic_tables():
                 except Exception:
                     pass
     return {"tables": tables, "scores": scores}
+
+
+@app.delete("/api/delete-all")
+def api_delete_all():
+    """
+    Delete all raw uploaded data and all generated results (synthetic data,
+    metadata, scores, quality reports). Leaves empty directories in place.
+    Returns a summary of how many files were removed.
+    """
+    import shutil
+ 
+    dirs_to_clear = [
+        _UPLOADED_DATA_DIR,
+        _SYNTHETIC_DIR,
+        _SCORES_DIR,
+        os.path.join(_PROJECT_ROOT, "results", "GaussianCopula_results", "quality_reports"),
+        os.path.join(_PROJECT_ROOT, "results", "meta_data"),
+    ]
+ 
+    removed = 0
+    errors = []
+ 
+    for d in dirs_to_clear:
+        if not os.path.isdir(d):
+            continue
+        for entry in os.listdir(d):
+            full = os.path.join(d, entry)
+            try:
+                if os.path.isfile(full) or os.path.islink(full):
+                    os.remove(full)
+                    removed += 1
+                elif os.path.isdir(full):
+                    shutil.rmtree(full)
+                    removed += 1
+            except Exception as e:
+                errors.append(f"{full}: {str(e)}")
+ 
+    return {
+        "status": "ok" if not errors else "partial",
+        "removed": removed,
+        "errors": errors,
+        "message": f"Deleted {removed} file(s)/folder(s)." + (f" {len(errors)} error(s)." if errors else ""),
+    }
+
 
 
 @app.get("/")
