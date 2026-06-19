@@ -18,6 +18,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+from pathlib import Path
+
+
 
 try:
     from src.generate_metada import generate_metadata, save_user_metadata_config
@@ -28,6 +31,7 @@ except ImportError:
 
 app = FastAPI(title="AnonymizationUI API")
 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -35,6 +39,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 
 
 @app.on_event("startup")
@@ -353,6 +359,50 @@ def api_synthetic_tables():
                 except Exception:
                     pass
     return {"tables": tables, "scores": scores}
+
+
+@app.delete("/api/delete-all")
+def api_delete_all():
+    """
+    Delete all raw uploaded data and all generated results (synthetic data,
+    metadata, scores, quality reports). Leaves empty directories in place.
+    Returns a summary of how many files were removed.
+    """
+    import shutil
+ 
+    dirs_to_clear = [
+        _UPLOADED_DATA_DIR,
+        _SYNTHETIC_DIR,
+        _SCORES_DIR,
+        os.path.join(_PROJECT_ROOT, "results", "GaussianCopula_results", "quality_reports"),
+        os.path.join(_PROJECT_ROOT, "results", "meta_data"),
+    ]
+ 
+    removed = 0
+    errors = []
+ 
+    for d in dirs_to_clear:
+        if not os.path.isdir(d):
+            continue
+        for entry in os.listdir(d):
+            full = os.path.join(d, entry)
+            try:
+                if os.path.isfile(full) or os.path.islink(full):
+                    os.remove(full)
+                    removed += 1
+                elif os.path.isdir(full):
+                    shutil.rmtree(full)
+                    removed += 1
+            except Exception as e:
+                errors.append(f"{full}: {str(e)}")
+ 
+    return {
+        "status": "ok" if not errors else "partial",
+        "removed": removed,
+        "errors": errors,
+        "message": f"Deleted {removed} file(s)/folder(s)." + (f" {len(errors)} error(s)." if errors else ""),
+    }
+
 
 
 @app.get("/")
